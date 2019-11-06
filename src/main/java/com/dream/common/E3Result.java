@@ -27,15 +27,15 @@ public class E3Result implements Serializable {
     // 响应中的数据
     private Object data;
 
-    private static E3Result build(Integer status, String msg, Object data) {
+    public static E3Result build(Integer status, String msg, Object data) {
         return new E3Result(status, msg, data);
     }
 
-    private static E3Result ok(Object data) {
+    public static E3Result ok(Object data) {
         return new E3Result(data);
     }
 
-    private static E3Result ok() {
+    public static E3Result ok() {
         return new E3Result(null);
     }
 
