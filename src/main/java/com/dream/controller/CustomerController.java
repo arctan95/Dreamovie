@@ -1,11 +1,14 @@
 package com.dream.controller;
 
 import com.dream.common.E3Result;
+import com.dream.po.Browse;
 import com.dream.po.Movie;
 import com.dream.po.User;
+import com.dream.service.LoginService;
 import com.dream.service.RegisterService;
 import com.dream.service.TopDefaultMovieService;
 import com.dream.service.UserService;
+import org.springframework.ui.Model;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,6 +32,9 @@ public class CustomerController {
 
     @Autowired
     private RegisterService registerService;
+
+    @Autowired
+    private LoginService loginService;
 
     @Autowired
     private TopDefaultMovieService topDefaultMovieService;
@@ -72,6 +78,40 @@ public class CustomerController {
             userId = (Integer)e3Result.getData();
         }
         request.getSession().setAttribute("userId", userId);
+        return e3Result;
+    }
+
+    // 新用户选择喜欢的电影
+    @RequestMapping(value = "/customer/register/movieSubmit", method = RequestMethod.POST)
+    @ResponseBody
+    public String selectedMovie(String ids, HttpServletRequest request) {
+        // 没有选择电影则不插入值
+        if (ids == "" || ids == null) {
+            System.out.println("为空");
+            return "fail";
+        } else {
+            // 获取用户id
+            Integer userId = (Integer) request.getSession().getAttribute("userId");
+            Browse browse = new Browse();
+            // 存用户名
+            browse.getUserid(userId);
+            browse.setmovieids(ids);
+            registerService.selectFavorite(browse);
+            return "ok";
+        }
+    }
+
+    // 判断登录账号是否存在
+    @RequestMapping(value = "/customer/login", method = RequestMethod.POST)
+    @ResponseBody
+    public E3Result login(String username, String password, Model model, HttpServletRequest request) {
+        E3Result e3Result = loginService.userLogin(username, password);
+        User user = null;
+        // 判断登录是否成功
+        if (e3Result.getStatus() == 200) {
+            user = (User) e3Result.getData();
+        }
+        request.getSession().setAttribute("user", user);
         return e3Result;
     }
 }
