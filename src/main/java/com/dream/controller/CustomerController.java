@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.List;
 
@@ -113,5 +114,54 @@ public class CustomerController {
         }
         request.getSession().setAttribute("user", user);
         return e3Result;
+    }
+
+    // 用户退出
+    @RequestMapping("/page/logout")
+    public String pagelogout(HttpServletRequest request) {
+        // 注销session
+        request.getSession().removeAttribute("user");
+        request.getSession().removeAttribute("userId");
+        request.getSession().removeAttribute("userstar");
+        request.getSession().removeAttribute("reviews");
+        request.getSession().removeAttribute("booluserunlikedmovie");
+        request.getSession().removeAttribute("TopRegDefaultMovie");
+        return "Home";
+    }
+
+    // 点击注册按钮后先对用户名和邮箱进行检查
+    @RequestMapping("/customer/checkboth/{paramName}/{paramEmail}/{type}")
+    @ResponseBody
+    public E3Result checkDataBoth(@PathVariable String paramName, @PathVariable String paramEmail, @PathVariable Integer type) {
+        // 如果前端传中文值后端进行decode
+        String str = null;
+        try {
+            str = URLDecoder.decode(paramName, "UTF-8");
+            E3Result e3Result = registerService.checkDataBoth(str,paramEmail,type);
+            return e3Result;
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    // 更新用户密码
+    @RequestMapping("/user/update")
+    @ResponseBody
+    public String updateUser(HttpServletRequest request) {
+        String useridstr = request.getParameter("userid");
+        String password = request.getParameter("password");
+        String email = request.getParameter("email");
+        Integer userid = Integer.parseInt(useridstr);
+        // 修改密码
+        userService.updateUser(userid,password,email);
+        return "OK";
+    }
+
+    @RequestMapping("/user/edit")
+    @ResponseBody
+    public User getUserById(Integer id) {
+        User user = userService.getUserById(id);
+        return user;
     }
 }
