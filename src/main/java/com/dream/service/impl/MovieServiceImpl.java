@@ -3,10 +3,12 @@ package com.dream.service.impl;
 import com.dream.common.E3Result;
 import com.dream.mapper.BrowseMapper;
 import com.dream.mapper.MovieMapper;
+import com.dream.mapper.SimilartabMapper;
 import com.dream.po.*;
 import com.dream.service.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -59,8 +61,16 @@ public class MovieServiceImpl implements MovieService {
         SimilartabExample.Criteria criteria = similartabExample.createCriteria();
         criteria.andItemid1EqualTo(id);
         similartabExample.setOrderByClause("similar");
-        List<Similartab> list =
-        return null;
+        List<Similartab> list = similartabMapper.select5ByExample(similartabExample);
+        List<Movie> movieList = new ArrayList<>();
+        Movie movie = null;
+        for(Similartab similartab : list) {
+            movie = movieMapper.selectByPrimaryKey(similartab.getItemid2());
+            if (movie != null) {
+                movieList.add(movie);
+            }
+        }
+        return E3Result.ok(movieList);
     }
 
     @Override

@@ -95,7 +95,7 @@ public class CustomerController {
             Integer userId = (Integer) request.getSession().getAttribute("userId");
             Browse browse = new Browse();
             // 存用户名
-            browse.getUserid(userId);
+            browse.setUserid(userId);
             browse.setmovieids(ids);
             registerService.selectFavorite(browse);
             return "ok";

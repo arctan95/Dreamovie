@@ -7,13 +7,13 @@ import com.dream.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * @ClassName IndexController
@@ -142,6 +142,113 @@ public class IndexController {
         }
         // 设置session
         request.getSession().setAttribute("moviedescription", movie);
+        return "success";
+    }
+
+    // 电影详情界面
+    @RequestMapping("/MovieDescription")
+    public String showMovieDescription(HttpServletRequest request) {
+        return "MovieDescription";
+    }
+
+    // 选电影界面加载更多按钮(通过类型标签，时序标签以及现有页面呈现的电影数目三个参数查询)
+    @RequestMapping(value = "/loadingmore", method = RequestMethod.POST)
+    @ResponseBody
+    public E3Result showloadmore(HttpServletRequest request){
+        Integer categoryid = Integer.parseInt(request.getParameter("type"));
+        int molimit = Integer.parseInt(request.getParameter("molimit"));
+        Selectquery query = new Selectquery();
+        query.setCategoryid(categoryid);
+        query.setmolimit(molimit);
+        query.setSort(request.getParameter("sort"));
+        E3Result e3ResultAllMovie = movieService.SortMoiveBycategory(query);
+        List<Movie> list = (List<Movie>) e3ResultAllMovie.getData();
+        E3Result e3Result = E3Result.ok(list);
+        return e3Result;
+    }
+
+    // 选择排序电影（类型和时序）
+    @RequestMapping(value = "/typesortmovie", method = RequestMethod.POST)
+    @ResponseBody
+    public E3Result showtypesortmovie(HttpServletRequest request) {
+        int type = Integer.parseInt(request.getParameter("type"));
+        int molimit = Integer.parseInt(request.getParameter("molimit"));
+        String sort = request.getParameter("sort");
+        Selectquery query = new Selectquery();
+        query.setCategoryid(type);
+        query.setmolimit(molimit);
+        query.setSort(sort);
+        E3Result e3ResultAllMovie = movieService.SortMoiveBycategory(query);
+        List<Movie> list = (List<Movie>) e3ResultAllMovie.getData();
+        E3Result e3Result = E3Result.ok(list);
+        return e3Result;
+    }
+
+    // 电影评星
+    @RequestMapping(value = "/getstar", method = RequestMethod.POST)
+    @ResponseBody
+    public String getstar(HttpServletRequest request) throws ParseException {
+        int userid = Integer.parseInt(request.getParameter("userid"));
+        int movieid = Integer.parseInt(request.getParameter("movieid"));
+        Double star = Double.parseDouble(request.getParameter("star"));
+        if (star >= 3.5) {
+            // 查询本地相似表
+            String movieids = movieService.Select5SimilarMovies(movieid);
+            // 判断数据库是否有该userid
+            Rectab rectab = rectabService.getRectabByUserId(userid);
+            Rectab rec = new Rectab();
+            rec.setUserid(userid);
+            rec.setMovieids(movieids);
+            // 没有则插入数据库
+            if (null == rectab) {
+                rectabService.insert(rec);
+            } else {
+                rectabService.update(rec);
+            }
+        }
+
+        String str = request.getParameter("time");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date time = format.parse(str);
+        Review review = new Review();
+        review.setUserid(userid);
+        review.setMovieid(movieid);
+        review.setStar(star);
+        review.setReviewtime(time);
+        // 写入数据库
+        starService.setStar(review);
+        review = null;
+        E3Result e3Result = starService.SortReviewByUseridandMovieid(userid, movieid);
+        review = (Review) e3Result.getData();
+        // 立即读取影评显示于前端
+        request.getSession().setAttribute("userstar", review);
+        return "success";
+    }
+
+
+    // 电影详情界面点击相似电影
+    @RequestMapping(value = "/getSimiMovies", method = RequestMethod.POST)
+    @ResponseBody
+    public E3Result getSimiMovies(HttpServletRequest request) {
+        int id = Integer.parseInt(request.getParameter("id"));
+        E3Result e3Result = movieService.Select5SimilarMoviesById(id);
+        List<Movie> simiMovies = (List<Movie>) e3Result.getData();
+        e3Result = e3Result.ok(simiMovies);
+        return e3Result;
+    }
+
+    // 电影详情界面用户喜欢电影（,id. 格式写入数据库，不存在则插入，存在则更新）
+    @RequestMapping(value = "/likedmovie", method = RequestMethod.POST)
+    @ResponseBody
+    public String likedmovie(HttpServletRequest request) {
+        String movieids = "," + request.getParameter("movieid") + ".";
+        int userid = Integer.parseInt(request.getParameter("userid"));
+        int boollike = Integer.parseInt(request.getParameter("boollike"));
+        Selectquery query = new Selectquery();
+        query.setCategoryid(userid);
+        query.setmolimit(boollike);
+        query.setSort(movieids);
+        movieService.InsertUserFavouriteMoive(query);
         return "success";
     }
 }
