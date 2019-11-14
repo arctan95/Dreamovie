@@ -39,6 +39,12 @@ public class IndexController {
     private MovieService movieService;
 
     @Autowired
+    private ReviewService reviewService;
+
+    @Autowired
+    private BrowseService browseService;
+
+    @Autowired
     private StarService starService;
 
     @RequestMapping("/")
@@ -250,5 +256,61 @@ public class IndexController {
         query.setSort(movieids);
         movieService.InsertUserFavouriteMoive(query);
         return "success";
+    }
+
+    // 点击个人中心按钮
+    @RequestMapping(value = "/page/profile")
+    @ResponseBody
+    public String goProfile(HttpServletRequest request) {
+        // 拿到userid
+        User user = (User) request.getSession().getAttribute("user");
+        Integer userid = user.getUserid();
+        // 影评的电影list
+        List<Review> reviews = reviewService.getReviewListByUserId(userid);
+        List<Movie> movies = new ArrayList<>();
+        // 喜欢的电影list
+        Browse browse = browseService.getBrowseByUserId(userid);
+        if (browse != null && null != browse.getmovieids()) {
+            String movieids = browse.getmovieids().replace(".", "").substring(1);
+            String[] strmovieids = movieids.split(",");
+            for (String strmovieid : strmovieids) {
+                Integer movieid = Integer.parseInt(strmovieid);
+                Movie movie = movieService.getMovieByMovieid(movieid);
+                movies.add(movie);
+            }
+        }
+
+        // 为review list中添加电影url
+        for (Review review : reviews) {
+            Integer movieid = review.getMovieid();
+            Movie movie = movieService.getMovieByMovieid(movieid);
+            review.setPicture(movie.getPicture());
+        }
+
+        request.getSession().setAttribute("movies", movies);
+        request.getSession().setAttribute("reviews", reviews);
+        return "success";
+    }
+
+    // 个人中心按钮
+    @RequestMapping("/profile")
+    public String showProfile() {
+        return "profile";
+    }
+
+    // 搜索电影
+    @RequestMapping(value = "/search", method = RequestMethod.POST)
+    @ResponseBody
+    public E3Result selectMoviesByName(HttpServletRequest request) {
+        String moviename = request.getParameter("search_text");
+        if (moviename == null || moviename == "") {
+            System.out.println("不能为空");
+            return null;
+        } else {
+            System.out.println("搜索内容" + moviename);
+            List<Movie> list = movieService.selectMoviesByName(moviename);
+            E3Result e3Result = E3Result.ok(list);
+            return e3Result;
+        }
     }
 }
