@@ -5,6 +5,7 @@ import com.dream.po.Review;
 import com.dream.po.ReviewExample;
 import com.dream.service.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -15,6 +16,7 @@ import java.util.List;
  * @Date 2019/11/14 20:35
  * @Version 1.0
  **/
+@Service
 public class ReviewServiceImpl implements ReviewService {
 
     @Autowired

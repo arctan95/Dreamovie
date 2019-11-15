@@ -5,6 +5,7 @@ import com.dream.po.Rectab;
 import com.dream.po.RectabExample;
 import com.dream.service.RectabService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -15,6 +16,7 @@ import java.util.List;
  * @Date 2019/11/10 17:24
  * @Version 1.0
  **/
+@Service
 public class RectabServiceImpl implements RectabService {
 
     @Autowired

@@ -6,6 +6,7 @@ import com.dream.po.Category;
 import com.dream.po.CategoryExample;
 import com.dream.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -16,6 +17,7 @@ import java.util.List;
  * @Date 2019/11/10 22:20
  * @Version 1.0
  **/
+@Service
 public class CategoryServiceImpl implements CategoryService {
     @Autowired
     private CategoryMapper categoryMapper;

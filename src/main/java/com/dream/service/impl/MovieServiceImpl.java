@@ -6,7 +6,9 @@ import com.dream.mapper.MovieMapper;
 import com.dream.mapper.SimilartabMapper;
 import com.dream.po.*;
 import com.dream.service.MovieService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +20,7 @@ import java.util.List;
  * @Date 2019/11/10 20:20
  * @Version 1.0
  **/
+@Service
 public class MovieServiceImpl implements MovieService {
 
     @Autowired
@@ -74,27 +77,33 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public int booluserunlikedmovie(int userid, String movieid) {
-        return 0;
+    public int booluserunlikedmovie(int userid,String movieid)
+    {
+        return  browseMapper.booluserunlikedmovie(userid,movieid);
     }
-
     @Override
-    public void InsertUserFavouriteMoive(Selectquery selectquery) {
-
+    public void InsertUserFavouriteMoive(Selectquery selectquery)
+    {
+        browseMapper.insertuserfavourtemovie(selectquery);
     }
-
     @Override
     public Movie getMovieByMovieid(Integer id) {
-        return null;
+        Movie movie = movieMapper.selectByPrimaryKey(id);
+        return movie;
     }
-
     @Override
-    public List<Movie> selectMoviesByName(String moviename) {
-        return null;
+    public List<Movie> selectMoviesByName(String moviename){
+        List<Movie> list = movieMapper.selectByNameLike(moviename);
+        return list;
     }
-
     @Override
     public String Select5SimilarMovies(int id) {
-        return null;
+        SimilartabExample similartabExample = new SimilartabExample();
+        SimilartabExample.Criteria criteria = similartabExample.createCriteria();
+        criteria.andItemid1EqualTo(id);
+        similartabExample.setOrderByClause("similar");
+        List<String> movieStr = similartabMapper.select5ByExampleStr(similartabExample);
+        String movieRet = StringUtils.join(movieStr, ",");
+        return movieRet;
     }
 }

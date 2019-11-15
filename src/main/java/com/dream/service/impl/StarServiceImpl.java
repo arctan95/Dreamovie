@@ -5,6 +5,7 @@ import com.dream.mapper.ReviewMapper;
 import com.dream.po.Review;
 import com.dream.service.StarService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * @ClassName StarServiceImpl
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @Date 2019/11/11 21:54
  * @Version 1.0
  **/
+@Service
 public class StarServiceImpl implements StarService {
 
     @Autowired

@@ -6,6 +6,7 @@ import com.dream.po.User;
 import com.dream.po.UserExample;
 import com.dream.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.List;
  * @Date 2019/11/8 22:20
  * @Version 1.0
  **/
+@Service
 public class LoginServiceImpl implements LoginService {
 
     @Autowired

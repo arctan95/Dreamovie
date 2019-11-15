@@ -9,6 +9,7 @@ import com.dream.po.User;
 import com.dream.po.UserExample;
 import com.dream.service.RegisterService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
 import java.util.Date;
@@ -21,6 +22,7 @@ import java.util.List;
  * @Date 2019/11/6 20:36
  * @Version 1.0
  **/
+@Service
 public class RegisterServiceImpl implements RegisterService {
 
     @Autowired

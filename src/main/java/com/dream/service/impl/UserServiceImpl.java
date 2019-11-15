@@ -4,6 +4,7 @@ import com.dream.mapper.UserMapper;
 import com.dream.po.User;
 import com.dream.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
 /**
@@ -13,6 +14,7 @@ import org.springframework.util.DigestUtils;
  * @Date 2019/11/5 19:58
  * @Version 1.0
  **/
+@Service
 public class UserServiceImpl implements UserService {
 
     @Autowired
