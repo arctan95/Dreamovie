@@ -77,7 +77,7 @@
 <script type="text/javascript">
     var curIndex = 0;
     //时间间隔(单位毫秒)，每秒钟显示一张，数组共有3张图片放在img文件夹下
-    var timeInterval = 2000;
+    var timeInterval = 6000;
     //定义一个存放照片位置的数组，可以放任意个，在这里放3个
     var arr = new Array();
     arr[0] = "/assets/img/loginimg/1.jpg";

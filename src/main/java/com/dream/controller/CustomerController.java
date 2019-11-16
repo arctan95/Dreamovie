@@ -8,6 +8,7 @@ import com.dream.service.LoginService;
 import com.dream.service.RegisterService;
 import com.dream.service.TopDefaultMovieService;
 import com.dream.service.UserService;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +28,7 @@ import java.util.List;
  * @Date 2019/11/5 19:55
  * @Version 1.0
  **/
+@Controller
 public class CustomerController {
     @Autowired
     private UserService userService;
@@ -64,8 +66,8 @@ public class CustomerController {
             return e3Result;
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
     // 对用户进行注册（在全部检查完成后）
@@ -88,7 +90,7 @@ public class CustomerController {
     public String selectedMovie(String ids, HttpServletRequest request) {
         // 没有选择电影则不插入值
         if (ids == "" || ids == null) {
-            System.out.println("为空");
+            System.out.print("为空");
             return "fail";
         } else {
             // 获取用户id
@@ -134,9 +136,8 @@ public class CustomerController {
     @ResponseBody
     public E3Result checkDataBoth(@PathVariable String paramName, @PathVariable String paramEmail, @PathVariable Integer type) {
         // 如果前端传中文值后端进行decode
-        String str = null;
         try {
-            str = URLDecoder.decode(paramName, "UTF-8");
+            String str = URLDecoder.decode(paramName, "UTF-8");
             E3Result e3Result = registerService.checkDataBoth(str,paramEmail,type);
             return e3Result;
         } catch (UnsupportedEncodingException e) {
