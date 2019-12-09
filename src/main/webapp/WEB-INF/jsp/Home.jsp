@@ -358,7 +358,7 @@
                 else
                 {
 //                $("#search-result").html("查无此片");
-                    alert("差不到此电影哦~")
+                    alert("查不到此电影哦~")
                 }
             }
             else {
